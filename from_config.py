@@ -1,3 +1,8 @@
+from comet_ml import Experiment
+import tensorflow as tf
+from tensorflow import keras
+#from models.conv_mnist_model import ConvMnistModel
+
 from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.args import get_args
@@ -10,6 +15,7 @@ def main():
     try:
         args = get_args()
         config = process_config(args.config)
+        print(type(config))
 
         # create the experiments dirs
         create_dirs([config.callbacks.tensorboard_log_dir, config.callbacks.checkpoint_dir])
@@ -18,12 +24,19 @@ def main():
         data_loader = factory.create("data_loader."+config.data_loader.name)(config)
 
         print('Create the model.')
+        print("JUANITO PEREEEE")
+
         model = factory.create("models."+config.model.name)(config)
+        print("HANS PEREEEE")
 
         print('Create the trainer')
-        trainer = factory.create("trainers."+config.trainer.name)(model.model, data_loader.get_train_data(), config)
-
+        trainer = factory.create("trainers."+config.trainer.name)(config,model.model, data_loader.get_train_data(),data_loader.get_val_data())
+    
+        print("JORGE MUÑOZ")
         print('Start training the model.')
+        print(hasattr(trainer, 'train'))
+        print(type(trainer))
+        print(type(trainer.train()))
         trainer.train()
 
     except Exception as e:

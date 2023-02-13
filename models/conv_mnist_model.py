@@ -1,25 +1,96 @@
+from comet_ml import Experiment
+
+
+import tensorflow as tf
+from tensorflow import keras
+import os
 from base.base_model import BaseModel
-from keras.models import Sequential
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten
+
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Conv2D, MaxPool2D, Dense, Flatten, Dropout, BatchNormalization, Input
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
+
+
 
 class ConvMnistModel(BaseModel):
     def __init__(self, config):
         super(ConvMnistModel, self).__init__(config)
+        self.config = config
         self.build_model()
+        self.init_callbacks()
+
+
+    def init_callbacks(self):
+        self.model.callbacks = []
+        
+        self.model.callbacks.append(
+            ModelCheckpoint(
+                filepath=os.path.join(self.config.callbacks.checkpoint_dir, '%s-{epoch:02d}-{val_loss:.2f}.hdf5' % self.config.exp.name),
+                monitor=self.config.callbacks.checkpoint_monitor,
+                mode=self.config.callbacks.checkpoint_mode,
+                save_best_only=self.config.callbacks.checkpoint_save_best_only,
+                save_weights_only=self.config.callbacks.checkpoint_save_weights_only,
+                verbose=self.config.callbacks.checkpoint_verbose,
+            )
+        )
+
+        self.model.callbacks.append(
+            TensorBoard(
+                log_dir=self.config.callbacks.tensorboard_log_dir,
+                write_graph=self.config.callbacks.tensorboard_write_graph,
+            )
+        )
+
+        #if hasattr(self.config,"comet_api_key"):
+            #experiment = Experiment(
+            #api_key="wIBIDki4VIuTgkIlTNOFsTijA",
+            #project_name="trap-camera",
+            #workspace="agustinesoto",
+            #)
+            #experiment.disable_mp()
+            #experiment.log_parameters(self.config)
+            #self.model.callbacks.append(experiment.get_keras_callback()) 
+        
+        
+        
 
     def build_model(self):
+        width_shape = 224
+        height_shape = 224
+        image_input = Input(shape=(width_shape, height_shape,3))
+        conv_base = VGG16(input_tensor=image_input,include_top=False,weights='imagenet')
+        
+        #First model
+        for layer in conv_base.layers:
+            layer.trainable = False
+
         self.model = Sequential()
-        self.model.add(Conv2D(32, kernel_size=(3, 3),
-                         activation='relu', input_shape=(28, 28, 1)))
-        self.model.add(Conv2D(64, (3, 3), activation='relu'))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.25))
+        self.model.add(conv_base)
         self.model.add(Flatten())
-        self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(10, activation='softmax'))
+
+        self.model.add(Dense(64,activation='relu'))
+        self.model.add(Dense(1,activation='sigmoid')) 
+
+       
+        self.model.summary()
+
+
 
         self.model.compile(
-              loss='sparse_categorical_crossentropy',
+              loss='binary_crossentropy',
               optimizer=self.config.model.optimizer,
-              metrics=['accuracy'])
+              metrics=['acc'],
+        )
+        
+
+
+
+        
+            
+            
