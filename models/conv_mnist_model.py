@@ -47,15 +47,8 @@ class ConvMnistModel(BaseModel):
             )
         )
 
-        #if hasattr(self.config,"comet_api_key"):
-            #experiment = Experiment(
-            #api_key="wIBIDki4VIuTgkIlTNOFsTijA",
-            #project_name="trap-camera",
-            #workspace="agustinesoto",
-            #)
-            #experiment.disable_mp()
-            #experiment.log_parameters(self.config)
-            #self.model.callbacks.append(experiment.get_keras_callback()) 
+        
+
         
         
         

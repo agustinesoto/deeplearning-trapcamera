@@ -17,6 +17,12 @@
     "validation_split":0.25,
     "verbose_training": true
   },
+    "tuning":{
+        "num_layers":3,
+        "min_nodes_per_layer":64,
+        "max_nodes_per_layer":256,
+        "node_step_size":64    
+  },
   "callbacks":{
     "checkpoint_monitor": "val_loss",
     "checkpoint_mode": "min",
