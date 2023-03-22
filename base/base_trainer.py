@@ -7,3 +7,4 @@ class BaseTrain(object):
 
     def train(self):
         raise NotImplementedError
+

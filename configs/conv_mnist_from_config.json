@@ -5,15 +5,19 @@
   "data_loader": {
     "name": "conv_mnist_data_loader.ConvMnistDataLoader"
   },
+   "data_input":{
+       "parent_dir":"DataTID",
+       "camera_dir":"J15",
+       "
+   },
   "model":{
     "name": "conv_mnist_model.ConvMnistModel",
-    "learning_rate": 0.001,
-    "optimizer": "adadelta"
+    "optimizer": "adam"
   },
   "trainer":{
     "name": "simple_mnist_trainer.SimpleMnistModelTrainer",
-    "num_epochs": 20,
-    "batch_size": 64,
+    "num_epochs": 100,
+    "batch_size": 32,
     "validation_split":0.25,
     "verbose_training": true
   },
@@ -22,6 +26,9 @@
         "min_nodes_per_layer":64,
         "max_nodes_per_layer":256,
         "node_step_size":64    
+  },
+    "evaluator":{
+    "name":"validation_tools.EvaluationBinary"
   },
   "callbacks":{
     "checkpoint_monitor": "val_loss",

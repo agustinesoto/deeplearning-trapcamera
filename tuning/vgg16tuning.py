@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
@@ -15,8 +14,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import pandas as pd
 import numpy as np
 from datetime import datetime
-
-
+from typing import List
 
 
 class TuningVGG16(BaseTuning):
@@ -24,14 +22,9 @@ class TuningVGG16(BaseTuning):
         super(TuningVGG16, self).__init__(config)
         self.models = []
         self.num_layers = config.tuning.num_layers
-        #print("num_layers: ",self.num_layers)
         self.min_nodes_per_layer = config.tuning.min_nodes_per_layer
-        #print("min_n: ",self.min_nodes_per_layer)
-
         self.max_nodes_per_layer = config.tuning.max_nodes_per_layer
-        #print("max_n: ",self.max_nodes_per_layer)
         self.node_step_size = config.tuning.node_step_size
-        #print("step: ",self.node_step_size)
         self.hidden_layer_activation = 'relu'
         self.num_nodes_at_output = 1
         self.output_layer_activation = 'sigmoid'
@@ -68,19 +61,20 @@ class TuningVGG16(BaseTuning):
             model.add(keras.layers.Dense(1, activation='sigmoid'))
             model._name = model_name[:-1]
             self.models.append(model)
-            
+     
+    
     def optimize(self,
              train_datagen: keras.preprocessing.image.DirectoryIterator,
-             val_datagen:keras.preprocessing.image.DirectoryIterator,
+             val_datagen: keras.preprocessing.image.DirectoryIterator,
              X_test: np.ndarray,
              y_test: np.ndarray,
-             epochs: int = 10,
+             epochs_list: List[int] = [30, 50, 100],
              verbose: int = 0) -> pd.DataFrame:
     
         # We'll store the results here
         results = []
     
-        def train(model: keras.Sequential) -> dict:
+        def train(model: keras.Sequential, epochs: int) -> dict:
             # Change this however you want
             model.compile(
                 loss=tf.keras.losses.binary_crossentropy,
@@ -100,10 +94,13 @@ class TuningVGG16(BaseTuning):
             # Make predictions on the test set
             preds = model.predict(X_test)
             prediction_classes = [1 if prob > 0.5 else 0 for prob in np.ravel(preds)]
-
+    
+    
+            print(prediction_classes)
             # Return evaluation metrics on the test set
             return {
                 'model_name': model.name,
+                'epochs': epochs,
                 'test_accuracy': accuracy_score(y_test, prediction_classes),
                 'test_precision': precision_score(y_test, prediction_classes),
                 'test_recall': recall_score(y_test, prediction_classes),
@@ -114,15 +111,14 @@ class TuningVGG16(BaseTuning):
         for model in self.models:
             try:
                 print(model.name, end=' ... ')
-                res = train(model=model)
-                results.append(res)
+                for epochs in epochs_list:
+                    res = train(model=model, epochs=epochs)
+                    results.append(res)
             except Exception as e:
                 print(f'{model.name} --> {str(e)}')
         
         res = pd.DataFrame(results)
-        #########
-        #now = datetime.now()
-        #dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        #########
-        res.to_csv(f"optimization_results.csv")
-        return pd.DataFrame(results)
+        now = datetime.now()
+        dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
+        res.to_csv(f"optimization_results_{dt_string}.csv", index=False)
+        return res

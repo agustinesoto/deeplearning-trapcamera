@@ -11,8 +11,10 @@ import numpy as np
 #camera_directory = "2-PN/I23"
 
 class ConvMnistDataLoader(BaseDataLoader):
+    
     def __init__(self, config):
         super(ConvMnistDataLoader,self).__init__(config)
+        self.root_dir = self.config.callbacks.checkpoint_dir 
         self.root_dir = "dataTID"
         self.camera_dir = "2-PN/J15"
         width_shape = 224
@@ -77,7 +79,7 @@ class ConvMnistDataLoader(BaseDataLoader):
         
 
     def get_test_data(self):
-        return self.x_test, self.y_test
+        return (self.x_test, self.y_test)
 
     
 

@@ -1,6 +1,4 @@
 from comet_ml import Experiment
-
-
 import tensorflow as tf
 from tensorflow import keras
 import os
@@ -47,12 +45,7 @@ class ConvMnistModel(BaseModel):
             )
         )
 
-        
-
-        
-        
-        
-
+    
     def build_model(self):
         width_shape = 224
         height_shape = 224
@@ -66,15 +59,19 @@ class ConvMnistModel(BaseModel):
         self.model = Sequential()
         self.model.add(conv_base)
         self.model.add(Flatten())
-
+        # dense256_dense128_dense64	
+        
+        self.model.add(Dense(256,activation='relu'))
+        self.model.add(Dense(128,activation='relu'))
         self.model.add(Dense(64,activation='relu'))
+
         self.model.add(Dense(1,activation='sigmoid')) 
 
        
         self.model.summary()
 
 
-
+        
         self.model.compile(
               loss='binary_crossentropy',
               optimizer=self.config.model.optimizer,

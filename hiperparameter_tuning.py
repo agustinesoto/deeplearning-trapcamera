@@ -28,7 +28,6 @@ def main():
     data_loader = ConvMnistDataLoader(config) 
     
     print('Getting the models.')
-    print(config.tuning.max_nodes_per_layer)
     tuner = TuningVGG16(config)
     tuner.get_models()
     resul = tuner.optimize(data_loader.train_gen,data_loader.val_datagen,data_loader.x_test,data_loader.y_test)
