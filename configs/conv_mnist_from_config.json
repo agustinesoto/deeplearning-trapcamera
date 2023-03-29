@@ -7,8 +7,7 @@
   },
    "data_input":{
        "parent_dir":"DataTID",
-       "camera_dir":"J15",
-       "
+       "camera_dir":"J15"
    },
   "model":{
     "name": "conv_mnist_model.ConvMnistModel",
