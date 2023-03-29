@@ -14,8 +14,6 @@ import pdb
 
 
 def main():
-    os.environ["CUDA_VISIBLE_DEVICES"] = "5" # use GPU 7
-
     # capture the config path from the run arguments
     # then process the json configuration fill
     try:
