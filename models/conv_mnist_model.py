@@ -79,7 +79,7 @@ class ConvMnistModel(BaseModel):
         )
         
 
-
+        
 
         
             
