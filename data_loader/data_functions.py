@@ -28,3 +28,5 @@ def directories_preprocesing(root_directory,camera_directory):
         if os.path.isdir(subdir_path) and subdir not in ["fantasma", "non_fantasma"]:
             # Delete the subdirectory and all its contents recursively
             shutil.rmtree(subdir_path)
+
+    

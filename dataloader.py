@@ -12,11 +12,11 @@ import sys
 import pdb
 
 
-
 def main():
     # capture the config path from the run arguments
     # then process the json configuration fill
     try:
+        pdb.set_trace()
         args = get_args()
         config = process_config(args.config)
         print(type(config))
@@ -26,6 +26,8 @@ def main():
 
         print('Create the data generator.')
         data_loader = factory.create("data_loader."+config.data_loader.name)(config)
+        
+    
         
     except Exception as e:
         print(e)

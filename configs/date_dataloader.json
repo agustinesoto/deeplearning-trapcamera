@@ -3,16 +3,16 @@
     "name": "conv_mnist_from_config"
   },
   "data_loader": {
-    "name": "date_loader.ConvMnistDataLoader"
+    "name": "date_loader.DateDataLoader"
   },
    "data_input":{
        "parent_dir":"data",
-       "camera_dir":"I23",
+       "camera_dir":"2-PN/I23",
        "width_shape":224,
        "height_shape":224
    },
   "model":{
-    "name": "conv_mnist_model.DateDataLoader",
+    "name": "date_loader.DateDataLoader",
     "optimizer": "adam"
   },
   "trainer":{
