@@ -16,7 +16,6 @@ def main():
     # capture the config path from the run arguments
     # then process the json configuration fill
     try:
-        pdb.set_trace()
         args = get_args()
         config = process_config(args.config)
         print(type(config))

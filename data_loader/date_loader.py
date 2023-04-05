@@ -55,22 +55,83 @@ def date_splitting(root_dir,camera_dir):
 
     
     df = df.sort_values('date')
-    print(df)
-    print("hola?")
-    df.to_csv("hola.csv",index=False)
-    
-
-    
-    
         
+    # Split data into training, validation, and test sets
+    train_size = 0.7
+    valid_test_size = 0.3
+    test_size = 0.2
+    
+    num_samples = len(df)
+    train_end_index = int(num_samples * train_size)
+    valid_test_start_index = train_end_index + 1
+    valid_test_end_index = int(num_samples * (train_size + valid_test_size))
+
+    train_df = df[:train_end_index]
+    valid_test_df = df[valid_test_start_index:valid_test_end_index]
+    test_df = valid_test_df.sample(frac=test_size/(valid_test_size)) # optional: random_state
+    valid_df = valid_test_df.drop(test_df.index)
+        
+    train_df.to_csv("train.csv",index=False)
+    test_df.to_csv("test.csv",index=False)
+    valid_df.to_csv("valid.csv",index=False)
+    
+    
+    # Create directories for train, test, and validation data
+    os.makedirs(os.path.join(root_dir, 'splitted_data', 'train'), exist_ok=True)
+    os.makedirs(os.path.join(root_dir, 'splitted_data', 'test'), exist_ok=True)
+    os.makedirs(os.path.join(root_dir, 'splitted_data', 'valid'), exist_ok=True)
+
+    print("IVOVVSDJJENFE")
+    
+    # Copy images to train directory
+    for filename in train_df['filename']:
+        label = train_df[train_df['filename']==filename]['label'].values[0]
+        src_path = os.path.join(data_dir, label, filename)
+        print(src_path)
+        dst_path = os.path.join(root_dir, 'splitted_data', 'train', label, filename)
+        os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+        shutil.copyfile(src_path, dst_path)
+
+    # Copy images to test directory
+    for filename in test_df['filename']:
+        label = test_df[test_df['filename']==filename]['label'].values[0]
+        src_path = os.path.join(data_dir, label, filename)
+        dst_path = os.path.join(root_dir, 'splitted_data', 'test', label, filename)
+        os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+        shutil.copyfile(src_path, dst_path)
+
+    # Copy images to validation directory
+    for filename in valid_df['filename']:
+        label = valid_df[valid_df['filename']==filename]['label'].values[0]
+        src_path = os.path.join(data_dir, label, filename)
+        dst_path = os.path.join(root_dir, 'splitted_data', 'valid', label, filename)
+        os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+        shutil.copyfile(src_path, dst_path)
+        
+            
+    # Report of count each class 
+    train_counts = train_df['label'].value_counts()
+    test_counts = test_df['label'].value_counts()
+    valid_counts = valid_df['label'].value_counts()
+
+    report_df = pd.DataFrame({
+        'train': train_counts,
+        'test': test_counts,
+        'valid': valid_counts
+    })
+
+    # Guardar dataframe como CSV
+    report_df.to_csv('report.csv', index=True)
 
 
+
+def data_augmentation(root_directory,camera_directory):
+    pass
     
 
 
 
-
-
+  
 def directories_preprocesing(root_directory,camera_directory):
     parent_dir = os.path.join(root_directory,camera_directory)
 
