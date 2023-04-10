@@ -2,7 +2,7 @@ from base.base_data_loader import BaseDataLoader
 import os
 import shutil
 import pandas as pd
-#import Augmentor
+import Augmentor
 #from tqdm import tqdm
 import tensorflow as tf
 import numpy as np
@@ -22,6 +22,7 @@ class DateDataLoader(BaseDataLoader):
        
         directories_preprocesing(root_dir,camera_dir)
         date_splitting(root_dir,camera_dir)
+        data_augmentation(root_dir,camera_dir)
         
         
     def get_train_data(self):
@@ -77,18 +78,18 @@ def date_splitting(root_dir,camera_dir):
     
     
     # Create directories for train, test, and validation data
-    os.makedirs(os.path.join(root_dir, 'splitted_data', 'train'), exist_ok=True)
-    os.makedirs(os.path.join(root_dir, 'splitted_data', 'test'), exist_ok=True)
-    os.makedirs(os.path.join(root_dir, 'splitted_data', 'valid'), exist_ok=True)
+    # Create directories for train, test, and validation data
+    os.makedirs(os.path.join(data_dir, 'splitted_data', 'train'), exist_ok=True)
+    os.makedirs(os.path.join(data_dir, 'splitted_data', 'test'), exist_ok=True)
+    os.makedirs(os.path.join(data_dir, 'splitted_data', 'valid'), exist_ok=True)
 
-    print("IVOVVSDJJENFE")
     
+    print("IVOVVSDJJENFE")
     # Copy images to train directory
     for filename in train_df['filename']:
         label = train_df[train_df['filename']==filename]['label'].values[0]
         src_path = os.path.join(data_dir, label, filename)
-        print(src_path)
-        dst_path = os.path.join(root_dir, 'splitted_data', 'train', label, filename)
+        dst_path = os.path.join(data_dir, 'splitted_data', 'train', label, filename) # corregir la ruta de destino
         os.makedirs(os.path.dirname(dst_path), exist_ok=True)
         shutil.copyfile(src_path, dst_path)
 
@@ -96,7 +97,7 @@ def date_splitting(root_dir,camera_dir):
     for filename in test_df['filename']:
         label = test_df[test_df['filename']==filename]['label'].values[0]
         src_path = os.path.join(data_dir, label, filename)
-        dst_path = os.path.join(root_dir, 'splitted_data', 'test', label, filename)
+        dst_path = os.path.join(data_dir, 'splitted_data', 'test', label, filename) # corregir la ruta de destino
         os.makedirs(os.path.dirname(dst_path), exist_ok=True)
         shutil.copyfile(src_path, dst_path)
 
@@ -104,9 +105,10 @@ def date_splitting(root_dir,camera_dir):
     for filename in valid_df['filename']:
         label = valid_df[valid_df['filename']==filename]['label'].values[0]
         src_path = os.path.join(data_dir, label, filename)
-        dst_path = os.path.join(root_dir, 'splitted_data', 'valid', label, filename)
+        dst_path = os.path.join(data_dir, 'splitted_data', 'valid', label, filename) # corregir la ruta de destino
         os.makedirs(os.path.dirname(dst_path), exist_ok=True)
         shutil.copyfile(src_path, dst_path)
+
         
             
     # Report of count each class 
@@ -121,12 +123,40 @@ def date_splitting(root_dir,camera_dir):
     })
 
     # Guardar dataframe como CSV
-    report_df.to_csv('report.csv', index=True)
+    report_df.to_csv(os.path.join(root_dir,camera_dir,"images_report.csv"), index=True)
 
 
 
-def data_augmentation(root_directory,camera_directory):
-    pass
+def data_augmentation(root_dir,camera_dir):
+    parent_dir = os.path.join(root_dir,camera_dir,"splitted_data")
+    
+    p= Augmentor.Pipeline(os.path.join(parent_dir,"train","fantasma"))
+    
+    p.rotate(probability=0.8, max_left_rotation=25, max_right_rotation=25)
+    p.flip_left_right(probability=0.6)
+    #p.flip_top_bottom(probability=0.4)
+    
+    results_df = pd.read_csv(os.path.join(root_dir,camera_dir,"images_report.csv"),index_col=0)
+        
+    num_of_samples = results_df.loc["non_fantasma", "train"] - results_df.loc["fantasma", "train"]
+    p.sample(num_of_samples)
+    
+    #moving generated new images
+    source = os.path.join(parent_dir,"train","fantasma","output")
+    destination = os.path.join(parent_dir,"train","fantasma")
+
+    import shutil
+    # gather all files
+    allfiles = os.listdir(source)
+
+    # iterate on all files to move them to destination folder
+    for f in allfiles:
+        src_path = os.path.join(source, f)
+        dst_path = os.path.join(destination, f)
+        shutil.move(src_path, dst_path)
+        
+    print("listo")
+    
     
 
 
