@@ -23,7 +23,6 @@ class ConvMnistModel(BaseModel):
         self.build_model()
         self.init_callbacks()
 
-
     def init_callbacks(self):
         self.model.callbacks = []
         
@@ -37,7 +36,7 @@ class ConvMnistModel(BaseModel):
                 verbose=self.config.callbacks.checkpoint_verbose,
             )
         )
-
+        
         self.model.callbacks.append(
             TensorBoard(
                 log_dir=self.config.callbacks.tensorboard_log_dir,
@@ -79,7 +78,7 @@ class ConvMnistModel(BaseModel):
         )
         
 
-
+        
 
         
             

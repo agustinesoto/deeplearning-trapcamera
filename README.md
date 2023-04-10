@@ -4,7 +4,7 @@
 
 <div align="center">    
  
-# Trap camera clasification using Deep Learning     
+# Trap camera clasification using Deep Learning  
 
 [![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539)
 [![Conference](http://img.shields.io/badge/NeurIPS-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)
@@ -27,20 +27,28 @@ Conference
 
 # Table of contents
 
+- [Trap camera clasification using Deep Learning](#trap-camera-clasification-using-deep-learning)
+- [Table of contents](#table-of-contents)
 - [Getting Started](#getting-started)
 - [Running The Demo Project](#running-the-demo-project)
 - [Comet.ml Integration](#cometml-integration)
 - [Template Details](#template-details)
-    - [Project Architecture](#project-architecture)
-    - [Folder Structure](#folder-structure)
-    - [Main Components](#main-components)
-- [Future Work](#future-work)
+  - [Project Architecture](#project-architecture)
+  - [Folder Structure](#folder-structure)
+  - [Main Components](#main-components)
+    - [Models](#models)
+    - [Trainers](#trainers)
+    - [Data Loaders](#data-loaders)
+    - [Configs](#configs)
+    - [Main](#main)
+    - [From Config](#from-config)
 - [Example Projects](#example-projects)
+- [Future Work](#future-work)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
 
 # Getting Started
-This template allows you to simply build and train deep learning models with checkpoints and tensorboard visualization.
+This template allows you to simply build and train deep learning models with checkpoints and tensorboard visualization
 
 In order to use the template you have to:
 1. Define a data loader class.
